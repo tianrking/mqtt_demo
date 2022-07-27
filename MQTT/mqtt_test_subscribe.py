@@ -1,5 +1,11 @@
 # subscriber.py
 import paho.mqtt.client as mqtt
+# from flask import Flask, request, jsonify,render_template
+import json
+import base64
+import pandas as pd
+import datetime as dt
+import time
 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
@@ -9,8 +15,28 @@ def on_connect(client, userdata, flags, rc):
     
 # 回调函数，当收到消息时，触发该函数
 def on_message(client, userdata, msg):
-    print(f"{msg.topic} {msg.payload}")
-    print(msg.payload.decode('utf-8'))
+    #print(f"{msg.topic} {msg.payload}")
+    #print(msg.payload.decode('utf-8'))
+    uplink_data = msg.payload.decode('utf-8')
+    uplink_data = json.loads(uplink_data)
+    #decode_data = base64.b64decode(uplink_data['payload'])
+    print(uplink_data['decoded']['payload'])
+    #print(decode_data.decode("utf-8"))
+
+    
+    
+    #try:
+    #    df = pd.read_excel("test.xlsx",sheet_Value="Sheet1",header=0)
+    #   df = df.append({'Time':dt.datetime.now(),'Value':1},ignore_index=True)
+    #    df = df.set_index('Time')
+    #    df.to_excel("test.xlsx")
+    #except:
+    #    df = pd.DataFrame({'Time':[],'Value':[]})
+    #    df = df.set_index('Time')
+    #    df.to_excel('test.xlsx')
+    #
+    #print(data.shape)
+    #return 1
 
 client = mqtt.Client()
 client.on_connect = on_connect
