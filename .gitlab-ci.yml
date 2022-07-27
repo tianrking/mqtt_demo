@@ -1,0 +1,7 @@
+build:
+  tags:
+    - nas
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - git clone https://github.com/tianrking/mqtt-demo
