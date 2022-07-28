@@ -25,7 +25,7 @@ def on_message(client, userdata, msg):
         humidity = flag["humi"]
     
         try:
-            df = pd.read_excel("test.xlsx",sheet_Value="Sheet1",header=0)
+            df = pd.read_excel("test.xlsx",sheet_name="Sheet1",header=0)
             df = df.append({'Time':dt.datetime.now(),'Temperature':temperature,'Humidity':humidity},ignore_index=True)
             df = df.set_index('Time')
             df.to_excel("test.xlsx")
