@@ -40,17 +40,6 @@ def on_message(client, userdata, msg):
     except:
         print("Network Error")
 
-    #try:
-    #    df = pd.read_excel("test.xlsx",sheet_Value="Sheet1",header=0)
-    #   df = df.append({'Time':dt.datetime.now(),'Value':1},ignore_index=True)
-    #    df = df.set_index('Time')
-    #    df.to_excel("test.xlsx")
-    #except:
-    #    df = pd.DataFrame({'Time':[],'Value':[]})
-    #    df = df.set_index('Time')
-    #    df.to_excel('test.xlsx')
-    #
-    #print(data.shape)
 
 client = mqtt.Client()
 client.on_connect = on_connect
