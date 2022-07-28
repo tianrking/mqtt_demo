@@ -20,7 +20,7 @@ def add_stu():
     print(decode_data.decode("utf-8"))
     
     try:
-        df = pd.read_excel("test.xlsx",sheet_Value="Sheet1",header=0)
+        df = pd.read_excel("test.xlsx",sheet_name="Sheet1",header=0)
         df = df.append({'Time':dt.datetime.now(),'Value':1},ignore_index=True)
         df = df.set_index('Time')
         df.to_excel("test.xlsx")
