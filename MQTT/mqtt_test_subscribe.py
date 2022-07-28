@@ -10,7 +10,7 @@ import time
 def on_connect(client, userdata, flags, rc):
     client.subscribe("helium/8730a475-49b5-440d-9b21-d4f9c1f1a4ae/rx")
     
-# 回调函数，当收到消息时，触发该函数
+# Callback function, which is triggered when a message is received
 def on_message(client, userdata, msg):
     #print(f"{msg.topic} {msg.payload}")
     #print(msg.payload.decode('utf-8'))
@@ -45,13 +45,13 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-# 设置遗嘱消息，当树莓派断电，或者网络出现异常中断时，发送遗嘱消息给其他客户端
+# Set up a will message to send a will message to other clients when the Raspberry Pi loses power, or when there is an abnormal network outage
 
 client.will_set('helium/8730a475-49b5-440d-9b21-d4f9c1f1a4ae/rx',  b'{"status": "Off"}')
 
-# 创建连接，三个参数分别为 broker 地址，broker 端口号，保活时间
+# Create a connection with three parameters: broker address, broker port number, and keep-alive time
 client.connect("broker.emqx.io", 1883, 60)
 
-# 设置网络循环堵塞，在调用 disconnect() 或程序崩溃前，不会主动结束程序
+# Set the network loop to block and not actively end the program until disconnect() is called or the program crashes
 client.loop_forever()
 
