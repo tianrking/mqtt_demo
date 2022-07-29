@@ -1,20 +1,74 @@
-# test_connect.py 
-import paho.mqtt.client as mqtt 
+# subscriber.py
+import paho.mqtt.client as mqtt
+import json
+import base64
+import pandas as pd
+import datetime as dt
+import time
+import argparse 
 
-# 回调函数。当尝试与 MQTT broker 建立连接时，触发该函数。
-# client 是本次连接的客户端实例。
-# userdata 是用户的信息，一般为空。但如果有需要，也可以通过 user_data_set 函数设置。
-# flags 保存服务器响应标志的字典。
-# rc 是响应码。
-# 一般情况下，我们只需要关注 rc 响应码是否为 0 就可以了。
+parser = argparse.ArgumentParser(description='manual to this script')
+parser.add_argument('--mode', type=str, default = '0')
+parser.add_argument('--dir', type=str, default='test.xlsx')
+args = parser.parse_args()
+
 def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print("Connected success")
-    else:
-        print(f"Connected fail with code {rc}")
+    client.subscribe("helium/8730a475-49b5-440d-9b21-d4f9c1f1a4ae/rx")
+    
+# Callback function, which is triggered when a message is received
+def on_message(client, userdata, msg):
+    #print(f"{msg.topic} {msg.payload}")
+    #print(msg.payload.decode('utf-8'))
+    uplink_data = msg.payload.decode('utf-8')
+    uplink_data = json.loads(uplink_data)
+    #decode_data = base64.b64decode(uplink_data['payload'])
+    print(uplink_data) 
+    try:
+        flag = uplink_data['decoded']['payload']
+        print(flag)
+        temperature = flag["temp"]
+        humidity = flag["humi"]
+    
+        try:
+            df = pd.read_excel("test.xlsx",sheet_name="Sheet1",header=0)
+            df = df.append({'Time':dt.datetime.now(),'Temperature':temperature,'Humidity':humidity},ignore_index=True)
+            df = df.set_index('Time')
+            df.to_excel("data.xlsx")
+        except:
+            df = pd.DataFrame({'Time':[],'Temperature':[],'Humidity':[]})
+            df = df.set_index('Time')
+            df.to_excel('data.xlsx')
+    
 
-client = mqtt.Client() 
-client.on_connect = on_connect 
-client.connect("broker.emqx.io", 1883, 60) 
-client.loop_forever()
+        print(df.shape)
+    
+    except:
+        print("Network Error")
+        
+def uplink_data():
+    
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
 
+    # Set up a will message to send a will message to other clients when the Raspberry Pi loses power, or when there is an abnormal network outage
+
+    client.will_set('helium/8730a475-49b5-440d-9b21-d4f9c1f1a4ae/rx',  b'{"status": "Off"}')
+
+    # Create a connection with three parameters: broker address, broker port number, and keep-alive time
+    client.connect("broker.emqx.io", 1883, 60)
+    
+    # Set the network loop to block and not actively end the program until disconnect() is called or the program crashes
+    client.loop_forever()
+ 
+def Visualization(_dir):
+    df = pd.read_excel(_dir,sheet_name="Sheet1",header=0)
+    df = df.set_index('Time')
+    df.plot()
+    plt.show()
+    
+if mode=='1':
+    Visualization(_dir):
+    
+if mode=='0':
+    uplink_data()
