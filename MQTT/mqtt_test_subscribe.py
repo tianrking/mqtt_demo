@@ -35,7 +35,7 @@ def on_message(client, userdata, msg):
             df.to_excel('data.xlsx')
     
 
-        print(data.shape)
+        print(df.shape)
     
     except:
         print("Network Error")
