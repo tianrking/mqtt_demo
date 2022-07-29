@@ -28,11 +28,11 @@ def on_message(client, userdata, msg):
             df = pd.read_excel("test.xlsx",sheet_name="Sheet1",header=0)
             df = df.append({'Time':dt.datetime.now(),'Temperature':temperature,'Humidity':humidity},ignore_index=True)
             df = df.set_index('Time')
-            df.to_excel("test.xlsx")
+            df.to_excel("data.xlsx")
         except:
             df = pd.DataFrame({'Time':[],'Temperature':[],'Humidity':[]})
             df = df.set_index('Time')
-            df.to_excel('test.xlsx')
+            df.to_excel('data.xlsx')
     
 
         print(data.shape)
